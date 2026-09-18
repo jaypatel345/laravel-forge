@@ -59,7 +59,7 @@
                             {{ $todo->title }}
                         </span>
                     </div>
-                    <form action="{{ route('todos.destroy', $todo) }}" method="POST">
+                    <form action="{{ route('todos.destroy', $todo) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this todo?');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="px-3 py-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors">Delete</button>
