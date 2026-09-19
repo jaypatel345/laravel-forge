@@ -41,29 +41,44 @@
 
         <div class="space-y-3">
             @forelse($todos as $todo)
-                <div class="bg-white p-4 rounded-xl shadow-md flex items-center justify-between border border-gray-100 {{ $todo->completed ? 'opacity-60' : '' }} hover:shadow-lg transition-shadow">
-                    <div class="flex items-center gap-4">
-                        <form action="{{ route('todos.update', $todo) }}" method="POST">
+                <div class="bg-white p-4 rounded-xl shadow-md border border-gray-100 {{ $todo->completed ? 'opacity-60' : '' }} hover:shadow-lg transition-shadow">
+                    @if(isset($editing) && $editing == $todo->id)
+                        <form action="{{ route('todos.update', $todo) }}" method="POST" class="flex gap-3">
                             @csrf
                             @method('PUT')
-                            <input type="hidden" name="completed" value="{{ $todo->completed ? '0' : '1' }}">
-                            <button type="submit" class="w-7 h-7 rounded-full border-2 {{ $todo->completed ? 'bg-green-500 border-green-500' : 'border-gray-300 hover:border-blue-400' }} flex items-center justify-center transition-colors">
-                                @if($todo->completed)
-                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                @endif
-                            </button>
+                            <input type="text" name="title" value="{{ $todo->title }}" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                            <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-md font-medium">Save</button>
+                            <a href="{{ route('home') }}" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors shadow-md font-medium">Cancel</a>
                         </form>
-                        <span class="{{ $todo->completed ? 'line-through text-gray-400' : 'text-gray-800' }} text-lg font-medium">
-                            {{ $todo->title }}
-                        </span>
-                    </div>
-                    <form action="{{ route('todos.destroy', $todo) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this todo?');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="px-3 py-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors">Delete</button>
-                    </form>
+                    @else
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <form action="{{ route('todos.update', $todo) }}" method="POST">
+                                    @csrf
+                                    @method('PUT')
+                                    <input type="hidden" name="completed" value="{{ $todo->completed ? '0' : '1' }}">
+                                    <button type="submit" class="w-7 h-7 rounded-full border-2 {{ $todo->completed ? 'bg-green-500 border-green-500' : 'border-gray-300 hover:border-blue-400' }} flex items-center justify-center transition-colors">
+                                        @if($todo->completed)
+                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        @endif
+                                    </button>
+                                </form>
+                                <span class="{{ $todo->completed ? 'line-through text-gray-400' : 'text-gray-800' }} text-lg font-medium">
+                                    {{ $todo->title }}
+                                </span>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="{{ route('home') }}?editing={{ $todo->id }}" class="px-3 py-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors">Edit</a>
+                                <form action="{{ route('todos.destroy', $todo) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this todo?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="px-3 py-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             @empty
                 <div class="bg-white p-8 rounded-xl shadow-md text-center border border-gray-100">

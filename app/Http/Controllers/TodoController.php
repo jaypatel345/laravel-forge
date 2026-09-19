@@ -8,11 +8,12 @@ use Illuminate\Support\Facades\Auth;
 
 class TodoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $todos = Auth::user()->todos()->latest()->get();
+        $editing = $request->query('editing');
 
-        return view('home', compact('todos'));
+        return view('home', compact('todos', 'editing'));
     }
 
     public function store(Request $request)
@@ -23,7 +24,7 @@ class TodoController extends Controller
 
         Auth::user()->todos()->create($validated);
 
-        return redirect()->back()->with('success', 'Todo created successfully!');
+        return redirect()->route('home')->with('success', 'Todo created successfully!');
     }
 
     public function update(Request $request, Todo $todo)
@@ -31,12 +32,13 @@ class TodoController extends Controller
         $this->authorize('update', $todo);
 
         $validated = $request->validate([
-            'completed' => 'required|boolean',
+            'title' => 'sometimes|required|string|max:255',
+            'completed' => 'sometimes|required|boolean',
         ]);
 
         $todo->update($validated);
 
-        return redirect()->back()->with('success', 'Todo updated successfully!');
+        return redirect()->route('home')->with('success', 'Todo updated successfully!');
     }
 
     public function destroy(Todo $todo)
@@ -45,6 +47,6 @@ class TodoController extends Controller
 
         $todo->delete();
 
-        return redirect()->back()->with('success', 'Todo deleted successfully!');
+        return redirect()->route('home')->with('success', 'Todo deleted successfully!');
     }
 }
